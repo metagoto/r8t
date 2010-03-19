@@ -1,0 +1,15 @@
+c++ template engine powered by google's v8 javascript engine
+
+r8t = rat + v8 + WIP
+(don't try to understand)
+
+
+Requires http://www.boost.org/
+
+
+---
+Test
+---
+
+$ g++ -O3 -o test -I/path/to/boost/include test.cpp
+$ ./test
