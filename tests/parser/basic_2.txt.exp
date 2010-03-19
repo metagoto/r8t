@@ -1,0 +1,1 @@
+for (i in post){__pr('  av\'a? ');__p(post[i].title + "str" + 'str');__pr('\n  ');if (post[i].date){__pr('hello');};};

@@ -1,0 +1,9 @@
+{# killer
+
+#} 
+
+salut ça và ?
+
+{% for (i in post): %}
+  avâ? {{ post[i].title }}
+{% endfor %}

@@ -1,0 +1,6 @@
+test
+*.o
+r8t.*
+
+tests/parser/*.out
+
