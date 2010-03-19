@@ -1,0 +1,6 @@
+{% for (i in posts) : %}
+  <div class="post">
+    <h2>{{ posts[i].title }}</h2>
+    h'i \\' " \\\"
+  </div>
+{% end %}

@@ -1,0 +1,1 @@
+for (i in posts) {__pr('  <div class="post">\n    <h2>');__p(posts[i].title);__pr('</h2>\n    h\'i \\\' " \\\"\n  </div>\n');};
