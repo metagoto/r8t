@@ -1,0 +1,13 @@
+{# killer 
+
+salut ca va ?
+#}{% for (i in post): %}
+  av'a? {{ post[i].title + "str" + 'str' }}
+  {%if (post[i].date): %}
+    hello
+  {% else if (true) : %}
+    abc
+  {% else :%}
+    def
+  {%endif%}
+{% end %}
