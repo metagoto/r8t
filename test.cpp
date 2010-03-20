@@ -117,6 +117,7 @@ int main()
         "tests/parser/basic_1.txt"
        ,"tests/parser/basic_2.txt"
        ,"tests/parser/basic_3.txt"
+       ,"tests/parser/basic_4.txt"
     };
 
     BOOST_FOREACH( const char* f, files )

@@ -172,7 +172,8 @@ struct standard_unicode : grammar<Iterator, unicode, std::string()>
 
 
         block_begin =
-                +(char_ - close_block)     [push_utf8(_val, _1)]
+                  -(&lit("else")           [_val += '}'])
+               >> +(char_ - close_block)   [push_utf8(_val, _1)]
         ;
 
 
