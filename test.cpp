@@ -81,6 +81,7 @@ bool test(std::string const& input, std::string const& expected, char const* fil
         }
     }
     std::cout << std::endl;
+    return true;
 }
 
 
