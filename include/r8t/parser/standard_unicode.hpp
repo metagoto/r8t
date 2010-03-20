@@ -11,8 +11,6 @@
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/regex/pending/unicode_iterator.hpp>
 
-#include <boost/algorithm/string/replace.hpp>
-
 
 namespace r8t { namespace parser
 {
@@ -49,6 +47,22 @@ namespace r8t { namespace parser
             }
         };
 
+        struct push_utf8_esc
+        {
+            template <typename S, typename C>
+            struct result { typedef void type; };
+
+            void operator()(std::string& buf, uchar code_point) const
+            {
+                switch (code_point)
+                {
+                    case '\'': buf += "\\'"; break;
+                    case '\n': buf += "\\n"; break;
+                    default: push_utf8()(buf, code_point);
+                }
+            }
+        };
+
         struct push_plain
         {
             template <typename S, typename C>
@@ -56,9 +70,7 @@ namespace r8t { namespace parser
 
             void operator()(std::string& buf, std::string const& plain) const
             {
-                std::string str(boost::algorithm::replace_all_copy(plain, "\n", "\\n"));
-                boost::algorithm::replace_all(str, "'", "\\'");
-                buf.append("__pr('").append(str).append("');");
+                buf.append("__pr('").append(plain).append("');");
             }
         };
 
@@ -103,10 +115,11 @@ struct standard_unicode : grammar<Iterator, unicode, std::string()>
     standard_unicode() : standard_unicode::base_type(start)
     {
 
-        function<detail::push_utf8>   push_utf8;
-        function<detail::push_plain>  push_plain;
-        function<detail::push_expr>   push_expr;
-        function<detail::push_block> push_block;
+        function<detail::push_utf8>     push_utf8;
+        function<detail::push_utf8_esc> push_utf8_esc;
+        function<detail::push_plain>    push_plain;
+        function<detail::push_expr>     push_expr;
+        function<detail::push_block>    push_block;
 
 
         open_block   = lit("{%") >> *space;
@@ -141,7 +154,7 @@ struct standard_unicode : grammar<Iterator, unicode, std::string()>
 
 
         plain =
-                +(char_ - open_marker)     [push_utf8(_val, _1)]
+                +(char_ - open_marker)     [push_utf8_esc(_val, _1)]
         ;
 
 
