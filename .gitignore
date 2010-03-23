@@ -1,6 +1,9 @@
-test
 *.o
 r8t.*
+build*
+
+test
+run_test*
 
 tests/parser/*.out
 
