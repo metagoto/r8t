@@ -4,12 +4,26 @@ r8t = rat + v8 + WIP
 (don't try to understand)
 
 
-Requires http://www.boost.org/
+Requires
+- http://www.boost.org 1.42+
+- http://code.google.com/p/v8
 
 
 ---
 Test
 ---
 
-$ g++ -O3 -o test -I/path/to/boost/include test.cpp
-$ ./test
+SConstruct is coming. For now:
+
+$ g++ -o test \
+      -I/path/to/boost/include \
+      -I/path/to/v8/include \
+      -L/path/to/boost/lib \
+      -L/path/to/v8/lib \
+      -lv8 -lboost_test_exec_monitor \
+      -DBOOST_TEST_STATIC_LINK \ # undef if you want boost_test_exec_monitor to be build in place
+      -fexceptions \
+      -Werror \
+      test.cpp
+
+$ ./test --log_level=test_suite --build_info=yes --report_level=detailed
