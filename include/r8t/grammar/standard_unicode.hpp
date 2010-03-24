@@ -12,7 +12,7 @@
 #include <boost/regex/pending/unicode_iterator.hpp>
 
 
-namespace r8t { namespace parser
+namespace r8t { namespace grammar
 {
 
     using boost::spirit::unicode::char_;
