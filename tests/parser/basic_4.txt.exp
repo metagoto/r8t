@@ -1,1 +1,1 @@
-for (i in post){__pr('  av\'a? ');__p(post[i].title + "str" + 'str');__pr('\n  ');if (post[i].date){__pr('    hello\n  ');}else if (true) {__pr('    abc\n  ');}else {__pr('    def\n  ');};};
+for (i in posts){__pr('  av\'a? ');__p(posts[i].title + "str" + 'str');__pr('\n  ');if (posts[i].date){__pr('    hello\n  ');}else if (true) {__pr('    abc\n  ');}else {__pr('    def\n  ');};};
