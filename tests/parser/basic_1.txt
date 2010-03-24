@@ -4,6 +4,6 @@
 
 salut ça và ?
 
-{% for (i in post): %}
-  avâ? {{ post[i].title }}
+{% for (i in posts): %}
+  avâ? {{ posts[i].title }}
 {% endfor %}

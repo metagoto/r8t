@@ -1,7 +1,7 @@
 {# killer 
 
 salut ca va ?
-#}{% for (i in post): %}
-  av'a? {{ post[i].title + "str" + 'str' }}
-  {%if (post[i].date):%}hello{%end%}
+#}{% for (i in posts): %}
+  av'a? {{ posts[i].title + "str" + 'str' }}
+  {%if (posts[i].date):%}hello{%end%}
 {% endfor %}

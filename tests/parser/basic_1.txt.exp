@@ -1,1 +1,1 @@
-__pr(' \n\nsalut ça và ?\n\n');for (i in post){__pr('  avâ? ');__p(post[i].title);__pr('\n');};
+__pr(' \n\nsalut ça và ?\n\n');for (i in posts){__pr('  avâ? ');__p(posts[i].title);__pr('\n');};

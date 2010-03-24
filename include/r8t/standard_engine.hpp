@@ -4,7 +4,7 @@
 #include <exception>
 #include <v8.h>
 
-#include "standard_context.hpp"
+#include "engine_base.hpp"
 
 
 namespace r8t
@@ -13,19 +13,20 @@ namespace r8t
 using namespace v8;
 
 
-struct standard_engine
+template<typename Context_T>
+struct standard_engine : public engine_base<Context_T>
 {
 
-    typedef standard_engine self_type;
+    typedef Context_T                     context_type;
+    typedef engine_base<context_type>     base_type;
+    typedef standard_engine<context_type> self_type;
 
     standard_engine();
     ~standard_engine();
 
-    std::string run(std::string const& src, standard_context const& context);
+    std::string run(std::string const& src, context_type const& ctx);
 
-
-    standard_context new_context();
-
+    context_type new_context();
 
 private:
 
@@ -34,31 +35,32 @@ private:
 
     static self_type* unwrap(Arguments const& args);
 
-
     std::string buffer;
-
 };
 
 
 //////////////////////////////////////////////////////
 
 
-inline standard_engine::standard_engine()
+template<typename Context_T>
+inline standard_engine<Context_T>::standard_engine()
 {
 
 }
 
 
-inline standard_engine::~standard_engine()
+template<typename Context_T>
+inline standard_engine<Context_T>::~standard_engine()
 {
 
 }
 
 
-inline std::string standard_engine::run(std::string const& src, standard_context const& contx)
+template<typename Context_T>
+inline std::string standard_engine<Context_T>::run(std::string const& src, context_type const& ctx)
 {
     HandleScope hs;
-    Context::Scope scope(contx.context);
+    Context::Scope scope( base_type::template get_context<Persistent<Context> >(ctx) );
 
     buffer.clear();
 
@@ -83,7 +85,8 @@ inline std::string standard_engine::run(std::string const& src, standard_context
 }
 
 
-inline standard_context standard_engine::new_context() // yes. return by val. RVO
+template<typename Context_T>
+inline Context_T standard_engine<Context_T>::new_context() // yes. return by val. RVO
 {
     HandleScope hs;
 
@@ -91,14 +94,12 @@ inline standard_context standard_engine::new_context() // yes. return by val. RV
     global_obj->Set(String::New("__pr"), FunctionTemplate::New(__pr, Handle<External>(External::New(this))));
     global_obj->Set(String::New("__p"),  FunctionTemplate::New(__p,  Handle<External>(External::New(this))));
 
-    standard_context ctx(global_obj);
-
-    return ctx;
+    return base_type::template create_context<Handle<ObjectTemplate> >(global_obj);
 }
 
 
-
-inline Handle<Value> standard_engine::__pr(Arguments const& args)
+template<typename Context_T>
+inline Handle<Value> standard_engine<Context_T>::__pr(Arguments const& args)
 {
     if (!args.Length())
         return Undefined();
@@ -111,7 +112,8 @@ inline Handle<Value> standard_engine::__pr(Arguments const& args)
 }
 
 
-inline Handle<Value> standard_engine::__p(Arguments const& args)
+template<typename Context_T>
+inline Handle<Value> standard_engine<Context_T>::__p(Arguments const& args)
 {
     if (!args.Length())
         return Undefined();
@@ -124,7 +126,8 @@ inline Handle<Value> standard_engine::__p(Arguments const& args)
 }
 
 
-inline standard_engine::self_type* standard_engine::unwrap(Arguments const& args)
+template<typename Context_T>
+inline typename standard_engine<Context_T>::self_type* standard_engine<Context_T>::unwrap(Arguments const& args)
 {
     Handle<External> field = Handle<External>::Cast(args.Data());
 
