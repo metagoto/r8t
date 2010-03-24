@@ -29,7 +29,7 @@ template<typename Parser
         ,typename Context
         ,template<typename T> class Engine
 >
-std::string basic_r8t<Parser, Context, Engine>::render(std::string const& input, context_type const& ctx)
+inline std::string basic_r8t<Parser, Context, Engine>::render(std::string const& input, context_type const& ctx)
 {
     std::string parsed;
     if (parser_type::parse(input, parsed))

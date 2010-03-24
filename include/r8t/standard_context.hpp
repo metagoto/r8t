@@ -53,13 +53,13 @@ private:
 ///////////////////////
 
 
-standard_context::~standard_context()
+inline standard_context::~standard_context()
 {
     dispose();
 }
 
 
-standard_context::standard_context(Handle<ObjectTemplate> const& obj_template)
+inline standard_context::standard_context(Handle<ObjectTemplate> const& obj_template)
     : global_template(Persistent<ObjectTemplate>::New(obj_template))
     , intern_context(Persistent<Context>::New(Context::New(0, global_template)))
 {
@@ -67,7 +67,7 @@ standard_context::standard_context(Handle<ObjectTemplate> const& obj_template)
 }
 
 
-standard_context::standard_context(standard_context const& other)
+inline standard_context::standard_context(standard_context const& other)
     : global_template(Persistent<ObjectTemplate>::New(other.global_template))
     , intern_context(Persistent<Context>::New(Context::New()))
 {
@@ -82,7 +82,7 @@ standard_context::standard_context(standard_context const& other)
 }
 
 
-standard_context& standard_context::operator=(standard_context const& other)
+inline standard_context& standard_context::operator=(standard_context const& other)
 {
     if (this != &other)
     {
@@ -99,7 +99,7 @@ standard_context& standard_context::operator=(standard_context const& other)
 }
 
 
-standard_context& standard_context::set(std::string const& name, const char* val)
+inline standard_context& standard_context::set(std::string const& name, const char* val)
 {
     HandleScope hs;
     Context::Scope scope(intern_context);
@@ -109,7 +109,7 @@ standard_context& standard_context::set(std::string const& name, const char* val
 
 
 template<typename T>
-standard_context& standard_context::set(std::string const& name, T const& val)
+inline standard_context& standard_context::set(std::string const& name, T const& val)
 {
     HandleScope hs;
     Context::Scope scope(intern_context);
@@ -118,7 +118,7 @@ standard_context& standard_context::set(std::string const& name, T const& val)
 }
 
 
-void standard_context::clone_from(Persistent<Context> const& other)
+inline void standard_context::clone_from(Persistent<Context> const& other)
 {
     Context::Scope scope(other);
 
@@ -144,7 +144,7 @@ void standard_context::clone_from(Persistent<Context> const& other)
 }
 
 
-void standard_context::dispose()
+inline void standard_context::dispose()
 {
     dispose(intern_context);
     dispose(global_template);
@@ -152,14 +152,14 @@ void standard_context::dispose()
 
 
 template<typename T>
-void standard_context::dispose(Persistent<T>& persistent)
+inline void standard_context::dispose(Persistent<T>& persistent)
 {
     persistent.Clear();
     persistent.Dispose();
 }
 
 
-Persistent<Context> const& standard_context::internal_context() const
+inline Persistent<Context> const& standard_context::internal_context() const
 {
     return intern_context;
 }
