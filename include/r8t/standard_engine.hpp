@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 #include <v8.h>
 
 #include "engine_base.hpp"
@@ -21,12 +21,21 @@ struct standard_engine : public engine_base<Context_T>
     typedef engine_base<context_type>     base_type;
     typedef standard_engine<context_type> self_type;
 
+    typedef Persistent<Script> compiled_type;
+
+
     standard_engine();
     ~standard_engine();
 
-    std::string run(std::string const& src, context_type const& ctx);
+    std::string eval(std::string const& src, context_type const& ctx);
+
+    compiled_type compile(std::string const& src, context_type const& ctx);
+
+    std::string run(compiled_type const& src, context_type const& ctx);
 
     context_type new_context();
+
+    static void release(compiled_type& item);
 
 private:
 
@@ -57,28 +66,66 @@ inline standard_engine<Context_T>::~standard_engine()
 
 
 template<typename Context_T>
-inline std::string standard_engine<Context_T>::run(std::string const& src, context_type const& ctx)
+inline std::string standard_engine<Context_T>::eval(std::string const& src, context_type const& ctx)
+{
+    buffer.clear();
+    HandleScope hs;
+    Context::Scope scope(base_type::template internal_context<Persistent<Context> >(ctx));
+    TryCatch trycatch;
+
+    Handle<String> source = String::New(src.c_str(), src.size());
+
+    Handle<Script> script = Script::Compile(source);
+    if (script.IsEmpty() || trycatch.HasCaught())
+    {
+        String::Utf8Value exception(trycatch.Exception());
+        throw std::runtime_error(*exception);
+    }
+    else
+    {
+        Handle<Value> result = script->Run();
+        if (result.IsEmpty() || trycatch.HasCaught())
+        {
+            String::Utf8Value exception(trycatch.Exception());
+            throw std::runtime_error(*exception);
+        }
+    }
+    return buffer;
+}
+
+
+template<typename Context_T>
+inline typename standard_engine<Context_T>::compiled_type standard_engine<Context_T>::compile(std::string const& src, context_type const& ctx)
 {
     HandleScope hs;
-    Context::Scope scope( base_type::template get_context<Persistent<Context> >(ctx) );
+    Context::Scope scope(base_type::template internal_context<Persistent<Context> >(ctx));
+    TryCatch trycatch;
 
-    buffer.clear();
+    Handle<String> source = String::New(src.c_str(), src.size());
 
+    Handle<Script> script = Script::New(source);
+    if (script.IsEmpty() || trycatch.HasCaught())
     {
-        TryCatch trycatch;
-        Handle<String> source = String::New(src.c_str(), src.size());
+        String::Utf8Value exception(trycatch.Exception());
+        throw std::runtime_error(*exception);
+    }
+    return Persistent<Script>::New(script);
+}
 
-        Handle<Script> script = Script::Compile(source);
-        if (trycatch.HasCaught()) {
-            Handle<Value> exception = trycatch.Exception();
-            throw std::runtime_error(*String::AsciiValue(exception));
-        }
 
-        Handle<Value> result = script->Run();
-        if (trycatch.HasCaught()) {
-            Handle<Value> exception = trycatch.Exception();
-            throw std::runtime_error(*String::AsciiValue(exception));
-        }
+template<typename Context_T>
+inline std::string standard_engine<Context_T>::run(compiled_type const& src, context_type const& ctx)
+{
+    buffer.clear();
+    HandleScope hs;
+    Context::Scope scope(base_type::template internal_context<Persistent<Context> >(ctx));
+    TryCatch trycatch;
+
+    Handle<Value> result = src->Run();
+    if (result.IsEmpty() || trycatch.HasCaught())
+    {
+        String::Utf8Value exception(trycatch.Exception());
+        throw std::runtime_error(*exception);
     }
 
     return buffer;
@@ -135,6 +182,14 @@ inline typename standard_engine<Context_T>::self_type* standard_engine<Context_T
     assert(field->Value() != (void*)0);
 
     return static_cast<self_type*>(field->Value());
+}
+
+
+template<typename Context_T>
+void standard_engine<Context_T>::release(compiled_type& item)
+{
+    item.Clear();
+    item.Dispose();
 }
 
 

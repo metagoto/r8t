@@ -9,12 +9,13 @@
 #endif
 
 #include <boost/foreach.hpp>
+#include <boost/timer.hpp>
 
 #include "tests/test_grammar.hpp"
 #include "tests/test_parser.hpp"
 #include "tests/test_context.hpp"
 #include "tests/test_engine.hpp"
-#include "tests/test_r8t.hpp"
+#include "tests/test_tpl.hpp"
 
 
 
@@ -22,7 +23,7 @@ BOOST_AUTO_TEST_SUITE(grammar_standard_unicode)
 
 BOOST_AUTO_TEST_CASE(from_string)
 {
-    using r8t::test::grammar::test;
+    using r8t::tests::grammar::test;
 
     test(""
         ,""
@@ -49,8 +50,8 @@ BOOST_AUTO_TEST_CASE(from_string)
 
 BOOST_AUTO_TEST_CASE(from_file)
 {
-    using r8t::test::from_file;
-    using r8t::test::grammar::test;
+    using r8t::tests::from_file;
+    using r8t::tests::grammar::test;
 
     std::string input;
     std::string expected;
@@ -80,7 +81,7 @@ BOOST_AUTO_TEST_SUITE(standard_parser)
 
 BOOST_AUTO_TEST_CASE(from_string)
 {
-    using r8t::test::parser::test;
+    using r8t::tests::parser::test;
 
     test(""
         ,""
@@ -107,8 +108,8 @@ BOOST_AUTO_TEST_CASE(from_string)
 
 BOOST_AUTO_TEST_CASE(from_file)
 {
-    using r8t::test::from_file;
-    using r8t::test::parser::test;
+    using r8t::tests::from_file;
+    using r8t::tests::parser::test;
 
     std::string input;
     std::string expected;
@@ -138,7 +139,7 @@ BOOST_AUTO_TEST_SUITE(standard_context)
 
 BOOST_AUTO_TEST_CASE(new_context)
 {
-    using r8t::test::context::test_variable_basic;
+    using r8t::tests::context::test_variable_basic;
 
     typedef r8t::standard_engine<r8t::standard_context> engine_type;
     typedef engine_type::context_type context_type;
@@ -152,7 +153,7 @@ BOOST_AUTO_TEST_CASE(new_context)
 
 BOOST_AUTO_TEST_CASE(copy_constructor)
 {
-    using r8t::test::context::test_variable_basic;
+    using r8t::tests::context::test_variable_basic;
 
     typedef r8t::standard_engine<r8t::standard_context> engine_type;
     typedef engine_type::context_type context_type;
@@ -167,20 +168,20 @@ BOOST_AUTO_TEST_CASE(copy_constructor)
     test_variable_basic(ctx2, e, false);
 
     ctx.set("test", false);
-    BOOST_CHECK_EQUAL(e.run("__p(test)",ctx), std::string("false"));
-    BOOST_CHECK_EQUAL(e.run("__p(test)",ctx2), std::string("string"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test)",ctx), std::string("false"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test)",ctx2), std::string("string"));
 
     ctx2.set("test", "nop");
-    BOOST_CHECK_EQUAL(e.run("__p(test)",ctx), std::string("false"));
-    BOOST_CHECK_EQUAL(e.run("__p(test)",ctx2), std::string("nop"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test)",ctx), std::string("false"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test)",ctx2), std::string("nop"));
 
 }
 
 BOOST_AUTO_TEST_CASE(assignment_operator)
 {
-    using r8t::test::context::test_variable_basic;
-    using r8t::test::context::test_variable_more;
-    using r8t::test::context::fill_context;
+    using r8t::tests::context::test_variable_basic;
+    using r8t::tests::context::test_variable_more;
+    using r8t::tests::context::fill_context;
 
     typedef r8t::standard_engine<r8t::standard_context> engine_type;
     typedef engine_type::context_type context_type;
@@ -220,10 +221,10 @@ BOOST_AUTO_TEST_SUITE(standard_engine)
 
 BOOST_AUTO_TEST_CASE(run)
 {
-    using r8t::test::from_file;
-    using r8t::test::engine::test;
-    using r8t::test::context::test_variable_more;
-    using r8t::test::context::fill_context;
+    using r8t::tests::from_file;
+    using r8t::tests::engine::test;
+    using r8t::tests::context::test_variable_more;
+    using r8t::tests::context::fill_context;
 
     typedef r8t::standard_engine<r8t::standard_context> engine_type;
     typedef engine_type::context_type context_type;
@@ -249,7 +250,7 @@ BOOST_AUTO_TEST_CASE(run)
         test_variable_more(ctx, e);
 
         if (from_file(f, input, expected))
-            r8t::test::engine::test(ctx, e, input, expected, f);
+            test(ctx, e, input, expected, f);
     }
 }
 
@@ -264,15 +265,12 @@ BOOST_AUTO_TEST_SUITE(r8t_interface)
 
 BOOST_AUTO_TEST_CASE(combined1)
 {
-    using r8t::test::from_file;
-    using r8t::test::context::fill_context;
-    using r8t::test::r8t::test;
+    using r8t::tests::from_file;
+    using r8t::tests::context::fill_context;
+    using r8t::tests::tpl::test;
 
-
-    typedef r8t::r8t tpl_type;
-
-    tpl_type tpl;
-    tpl_type::context_type ctx = tpl.new_context();
+    r8t::tpl t;
+    r8t::tpl::context_type ctx = t.new_context();
 
     fill_context(ctx);
 
@@ -290,9 +288,26 @@ BOOST_AUTO_TEST_CASE(combined1)
     BOOST_FOREACH(const char* f, files)
     {
         if (from_file(f, input, expected, ".exp.exp"))
-        {
-            r8t::test::r8t::test(tpl, ctx, input, expected, f);
-        }
+            test(t, ctx, input, expected, f);
+    }
+
+
+    //////// TMP
+    boost::timer c;
+
+    t.base_path(boost::filesystem::current_path().string());
+    try {
+
+        std::cout << t.render("tests/parser/basic_1.txt", ctx) << std::endl;
+
+        std::cout << t.render("tests/parser/basic_1.txt", ctx) << std::endl;
+
+        std::cout << t.render("tests/parser/basic_2.txt", ctx) << std::endl;
+
+        std::cout << c.elapsed() << std::endl;
+    }
+    catch (...) {
+        std::cout << "CAUGHT";
     }
 
 

@@ -5,7 +5,7 @@
 #include "../include/r8t/standard_context.hpp"
 
 
-namespace r8t { namespace test { namespace context
+namespace r8t { namespace tests { namespace context
 {
 
 using namespace r8t;
@@ -38,29 +38,29 @@ inline void test_variable_basic(Context& ctx, Engine& e, bool set = true)
         ctx.set("test7", int_m);
     }
 
-    BOOST_CHECK_EQUAL(e.run("__p(test)",ctx), std::string("string"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test)",ctx), std::string("string"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(test1)",ctx), std::string("const char*"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test1)",ctx), std::string("const char*"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(test2)",ctx), std::string("true"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test2)",ctx), std::string("true"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(test3)",ctx), std::string("42"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test3)",ctx), std::string("42"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(test4)",ctx), std::string("3.14"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test4)",ctx), std::string("3.14"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(typeof test5)",ctx), std::string("object"));
-    BOOST_CHECK_EQUAL(e.run("__p(test5.length)",ctx), std::string("3"));
-    BOOST_CHECK_EQUAL(e.run("__p(test5)",ctx),        std::string("1,2,42"));
+    BOOST_CHECK_EQUAL(e.eval("__p(typeof test5)",ctx), std::string("object"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test5.length)",ctx), std::string("3"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test5)",ctx),        std::string("1,2,42"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(typeof test6)",ctx), std::string("object"));
-    BOOST_CHECK_EQUAL(e.run("__p(test6.length)",ctx), std::string("3"));
-    BOOST_CHECK_EQUAL(e.run("__p(test6)",ctx),        std::string("1,2,42"));
+    BOOST_CHECK_EQUAL(e.eval("__p(typeof test6)",ctx), std::string("object"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test6.length)",ctx), std::string("3"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test6)",ctx),        std::string("1,2,42"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(typeof test7)",ctx), std::string("object"));
-    BOOST_CHECK_EQUAL(e.run("__p(test7)",ctx),        std::string("[object Object]"));
-    BOOST_CHECK_EQUAL(e.run("__p(test7.a + test7.b + test7.c)",ctx), std::string("49"));
+    BOOST_CHECK_EQUAL(e.eval("__p(typeof test7)",ctx), std::string("object"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test7)",ctx),        std::string("[object Object]"));
+    BOOST_CHECK_EQUAL(e.eval("__p(test7.a + test7.b + test7.c)",ctx), std::string("49"));
 
-    //BOOST_CHECK_THROW(e.run("__p(none)",ctx), std::runtime_error);
+    BOOST_CHECK_THROW(e.eval("__p(none)",ctx), std::runtime_error);
 }
 
 
@@ -116,13 +116,13 @@ template<typename Context, typename Engine>
 inline void test_variable_more(Context& ctx, Engine& e)
 {
 
-    BOOST_CHECK_EQUAL(e.run("__p(typeof posts)",ctx), std::string("object"));
-    BOOST_CHECK_EQUAL(e.run("__p(posts.length)",ctx), std::string("3"));
-    BOOST_CHECK_EQUAL(e.run("__p(posts[2].date)",ctx), std::string("date3"));
+    BOOST_CHECK_EQUAL(e.eval("__p(typeof posts)",ctx), std::string("object"));
+    BOOST_CHECK_EQUAL(e.eval("__p(posts.length)",ctx), std::string("3"));
+    BOOST_CHECK_EQUAL(e.eval("__p(posts[2].date)",ctx), std::string("date3"));
 
-    BOOST_CHECK_EQUAL(e.run("__p(typeof map)",ctx), std::string("object"));
-    BOOST_CHECK_EQUAL(e.run("__p(map.ints2.length)",ctx), std::string("3"));
-    BOOST_CHECK_EQUAL(e.run("__p(map.ints2[2])",ctx), std::string("6"));
+    BOOST_CHECK_EQUAL(e.eval("__p(typeof map)",ctx), std::string("object"));
+    BOOST_CHECK_EQUAL(e.eval("__p(map.ints2.length)",ctx), std::string("3"));
+    BOOST_CHECK_EQUAL(e.eval("__p(map.ints2[2])",ctx), std::string("6"));
 
 }
 

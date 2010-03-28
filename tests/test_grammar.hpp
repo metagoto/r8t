@@ -4,7 +4,7 @@
 #include "../include/r8t/grammar/standard_unicode.hpp"
 
 
-namespace r8t { namespace test { namespace grammar
+namespace r8t { namespace tests { namespace grammar
 {
 
 

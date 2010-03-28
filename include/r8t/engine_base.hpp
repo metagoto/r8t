@@ -16,7 +16,7 @@ protected:
     }
 
     template<typename U>
-    U const& get_context(T const& ctx)
+    U const& internal_context(T const& ctx)
     {
         return ctx.internal_context();
     }

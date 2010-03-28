@@ -3,14 +3,68 @@ c++ template engine powered by google's v8 javascript engine
 r8t = rat + v8 + WIP
 (don't try to understand)
 
-
 Requires
 - http://www.boost.org 1.42+
 - http://code.google.com/p/v8
 
+r8t is headers only.
+
 
 ---
-Test
+Demo
+---
+
+  #include <iostream>
+  #include "include/r8t/tpl.hpp"
+
+  int main()
+  {
+      r8t::tpl t;
+      r8t::tpl::context_type ctx = t.new_context();
+
+      ctx.set("hello", "hello world")
+         .set("pi", 3.14);
+
+      std::string str = "{{hello}}                " \
+                        "{% for (i in [1,2,3]) :%}" \
+                        "  pi is {{pi}}           " \
+                        "{% end %}                " ;
+
+      t.base_path("/templates/path");
+
+      try  {
+          std::cout << t.render_string(str, ctx)
+                    << t.render("file.html", ctx)
+                    << std::endl;
+      }
+      catch (...) {
+          ;
+      }
+      return 0;
+  }
+
+
+
+---
+Design
+---
+
+r8t::tpl is a typedef to r8t::basic_tpl wich is parameterized with policies
+for the parser, context, engine, loader and cache types.
+
+More types later. Right now, only standard policies are under implementation:
+
+- parser : utf8 aware Django/js like grammar.
+- context: support a few std types and containers.
+           custom types supported through template specializations.
+- engine : simple runtime around google v8
+- loader : filesystem
+- cache  : simple assoc in memory container. stores compiled templates (v8 byte code)
+
+
+
+---
+Tests
 ---
 
 SConstruct is coming. For now:
@@ -20,10 +74,14 @@ $ g++ -o test \
       -I/path/to/v8/include \
       -L/path/to/boost/lib \
       -L/path/to/v8/lib \
-      -lv8 -lboost_test_exec_monitor \
-      -DBOOST_TEST_STATIC_LINK \ # undef if you want boost_test_exec_monitor to be build in place
-      -fexceptions \
+      -lv8 -lpthread -lboost_filesystem -lboost_system \
+      -DBOOST_TEST_STATIC_LINK \
+      -lboost_test_exec_monitor \
       -Werror \
       test.cpp
 
 $ ./test --log_level=test_suite --build_info=yes --report_level=detailed
+
+Note: You can remove -DBOOST_TEST_STATIC_LINK and -lboost_test_exec_monitor
+      from the command above if you want boost_test_exec_monitor to be built
+      in place rather than statically linking to libboost_test_exec_monitor

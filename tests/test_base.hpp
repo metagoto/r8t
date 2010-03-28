@@ -13,7 +13,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 
-namespace r8t { namespace test
+namespace r8t { namespace tests
 {
 
 

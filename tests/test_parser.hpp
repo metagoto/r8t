@@ -5,7 +5,7 @@
 #include "../include/r8t/standard_parser.hpp"
 
 
-namespace r8t { namespace test { namespace parser
+namespace r8t { namespace tests { namespace parser
 {
 
 

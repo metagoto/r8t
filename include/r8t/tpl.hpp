@@ -1,10 +1,13 @@
 #pragma once
 
-#include "basic_r8t.hpp"
+#include "basic_tpl.hpp"
 #include "grammar/standard_unicode.hpp"
 #include "standard_parser.hpp"
 #include "standard_context.hpp"
 #include "standard_engine.hpp"
+#include "standard_loader.hpp"
+#include "standard_cache.hpp"
+
 
 namespace r8t
 {
@@ -17,12 +20,14 @@ namespace r8t
     }
 
 
-typedef r8t::basic_r8t<
+typedef r8t::basic_tpl<
                 parser_type
                ,r8t::standard_context
                ,r8t::standard_engine
+               ,r8t::standard_loader
+               ,r8t::standard_cache
         >
-        r8t;
+        tpl;
 
 
 } // ns
